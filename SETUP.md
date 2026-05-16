@@ -1,371 +1,229 @@
-# Como Usar Este Setup
+# Setup Guide
 
-## 🎯 O Que É Isso?
+Centralized AI agent environment for opencode, codex, and claude.
 
-Um ambiente centralizado para 3 harnesses de AI (opencode, codex, claude):
-- Regras globais em `~/work/agent/AGENTS.md`
-- 32 skills compartilhadas
-- Token optimization (RTK)
-- Templates para novos projetos
-
-**Resultado:** Todos os harnesses seguem as mesmas regras, compartilham skills, funcionam igual.
+**Philosophy:** Just talk to it. Give agent way to verify. Ship fast.
 
 ---
 
-## ⚡ Setup Inicial (Uma Vez Só)
+## Quick Start
 
-### 1. Criar Symlinks (se ainda não fez)
+### 1. Global Setup (Once)
 
 ```bash
 cd ~/work/agent
-./setup-symlinks.sh
+./scripts/setup-symlinks.sh
 ```
 
-**O que isso faz:**
+Creates symlinks:
 ```
-~/.config/opencode/AGENTS.md  → ~/work/agent/stacks/opencode/AGENTS.md
-~/.config/opencode/skills/    → ~/work/agent/skills/
-~/.codex/AGENTS.md            → ~/work/agent/stacks/codex/AGENTS.md
-~/.codex/skills/              → ~/work/agent/skills/
-~/.claude/CLAUDE.md           → ~/work/agent/stacks/claude/CLAUDE.md
-~/.claude/skills/             → ~/work/agent/skills/
+~/.config/opencode/ → ~/work/agent/stacks/opencode/
+~/.codex/           → ~/work/agent/stacks/codex/
+~/.claude/          → ~/work/agent/stacks/claude/
+skills/             → ~/work/agent/skills/ (all stacks)
 ```
 
-### 2. Verificar
-
+**Verify:**
 ```bash
-# Ver se symlinks foram criados
-ls -la ~/.config/opencode/AGENTS.md
-ls -la ~/.codex/AGENTS.md
 ls -la ~/.claude/CLAUDE.md
-
-# Todos devem apontar pra ~/work/agent/stacks/...
-```
-
-**Pronto!** Setup global completo. Agora configure cada projeto.
-
----
-
-## 📁 Setup Por Projeto
-
-### Opção 1: Projeto Novo
-
-```bash
-cd ~/work/meu-projeto-novo
-cp ~/work/agent/AGENTS.template.md ./AGENTS.md
-
-# Edita AGENTS.md:
-# 1. Escolhe Option 1, 2 ou 3 (apaga o resto)
-# 2. Adiciona comandos específicos
-# 3. Adiciona "Out of Scope" (o que NÃO mexer)
-# 4. MANTÉM CURTO! (só o que agent não consegue inferir do código)
-```
-
-### Opção 2: Projeto Existente
-
-```bash
-cd ~/work/meu-projeto-existente
-
-# Se já tem AGENTS.md/CLAUDE.md:
-# - Lê ~/work/agent/AGENTS.md (regras globais)
-# - Adiciona linha no topo: "READ ~/work/agent/AGENTS.md BEFORE ANYTHING."
-# - Remove duplicações (global já cobre)
-
-# Se não tem:
-cp ~/work/agent/AGENTS.template.md ./AGENTS.md
-# Edita com stack + comandos específicos
+ls -la ~/.claude/skills/
+# Should point to ~/work/agent/...
 ```
 
 ---
 
-## 🚀 Workflow Diário
+### 2. Per-Project Setup
 
-### Como o Claude Lê os Arquivos
+**For NEW projects** (no AGENTS.md yet):
+```bash
+cd ~/work/agent
+./scripts/setup-new-project.sh <project-name>
 
-Quando você roda `claude` em qualquer projeto:
+# Example:
+./scripts/setup-new-project.sh my-app
+# Creates: ~/work/my-app/AGENTS.md from template
+```
+
+**For EXISTING projects** (has AGENTS.md):
+```bash
+cd ~/work/agent
+./scripts/setup-existing-project.sh <project-name>
+
+# Example:
+./scripts/setup-existing-project.sh my-app
+# Adds global reference to existing ~/work/my-app/AGENTS.md
+```
+
+**Note:** All scripts assume your projects are in `~/work/`
+
+---
+
+## How It Works
+
+When you run `claude` in any project:
 
 ```
-1. Claude lê: ~/.claude/CLAUDE.md
-   ↓ (que é symlink pra ~/work/agent/stacks/claude/CLAUDE.md)
-   ↓ (que tem: "READ ~/work/agent/AGENTS.md")
-
-2. Claude lê: ~/work/agent/AGENTS.md (regras globais)
-   ↓ (core rules, RTK, skills, etc)
-
-3. Claude lê: ~/work/agent/RTK.md (token optimization)
+1. Reads: ~/.claude/CLAUDE.md (symlink)
    ↓
-
-4. Claude lê: ./AGENTS.md (regras do projeto, se existir)
-   ↓ (stack, comandos, out of scope)
-
-5. Claude lê: seu código
+2. Reads: ~/work/agent/AGENTS.md (global rules)
+   ↓
+3. Reads: ~/work/agent/RTK.md (token optimization)
+   ↓
+4. Reads: ./AGENTS.md (project-specific rules)
+   ↓
+5. Reads: your code
+   ↓
+6. Implements following ALL rules
 ```
 
-**Ordem de prioridade:** Projeto > Global > Defaults
-
-### Exemplo Real
-
-```bash
-cd ~/work/meu-app
-claude
-
-# Você:
-"add login button"
-
-# Claude entende:
-# - AGENTS.md global: "Just talk to it, short prompts, give way to verify"
-# - RTK.md: "Prefix shell commands with rtk"
-# - ./AGENTS.md: "Stack: Next.js 16, Commands: npm run dev, Never touch: lib/billing/"
-# - Código: vê que já existe Button component, reutiliza padrões
-
-# Claude faz:
-# 1. Cria LoginButton.tsx seguindo padrões existentes
-# 2. Sugere teste
-# 3. Roda: rtk npm test
-# 4. Commit atômico
-```
+**Priority:** Project > Global > Defaults
 
 ---
 
-## 📝 O Que Colocar no AGENTS.md do Projeto
+## What to Put in Project AGENTS.md
 
-### ✅ Colocar (Agent NÃO consegue inferir)
+### ✅ Include (agent can't infer)
 
 ```markdown
 ## Stack
-- Next.js 16, PostgreSQL, Tailwind
-- Use bun (não npm!)
+- Next.js 16, PostgreSQL, bun (not npm!)
 
 ## Commands
 rtk bun test
 rtk bun run dev
 
 ## Out of Scope
-- Never touch: lib/billing/ (legacy, external team)
+- Never touch: lib/billing/ (external team)
 - Never modify: .env files
 
 ## Project-Specific
 - API base: http://localhost:8080/api/v1
-- Run migrations before schema changes: make migrate-up
+- Migrations: make migrate-up before schema changes
 - Brand voice: casual PT-BR (see .guidelines/brand.md)
 ```
 
-### ❌ NÃO Colocar (Agent infere do código)
+### ❌ Exclude (agent infers from code)
 
 ```markdown
-❌ "Components go in src/components/" (óbvio do código)
-❌ "Use TypeScript" (vê nos imports)
-❌ "Functions should be small" (regra global já cobre)
-❌ "Never commit secrets" (regra global já cobre)
-❌ Documentação completa da API (link é suficiente)
+❌ "Components in src/components/" (obvious)
+❌ "Use TypeScript" (sees from imports)
+❌ "Never commit secrets" (global covers this)
+❌ Full API docs (link is enough)
 ```
 
-**Regra:** Se agent consegue ver no código, não escreve. Se agent erra sempre, adiciona.
+**Goal:** 50-100 lines, not 500.
 
 ---
 
-## 🔧 Comandos Úteis
-
-### Atualizar Global (Afeta Todos os Projetos)
+## Daily Usage
 
 ```bash
-cd ~/work/agent
-# Edita AGENTS.md, RTK.md, etc
-rtk git add -A
-rtk git commit -m "feat: add new global rule"
+cd ~/work/my-project
+claude
 
-# Mudança reflete em todos os 3 harnesses automaticamente (symlinks!)
+"add login button"
+
+# Agent understands:
+# - Global: "Just talk to it, use RTK, give way to verify"
+# - RTK: "Prefix commands with rtk"
+# - Project: "Stack: Next.js, Commands: npm run dev"
+# - Code: "Button component exists, reuse pattern"
+
+# Agent does:
+# 1. Creates LoginButton.tsx (project pattern)
+# 2. Writes tests
+# 3. Runs: rtk npm test
+# 4. Atomic commit
 ```
 
-### Atualizar Projeto Específico
+---
 
+## Common Commands
+
+### Update Global (affects ALL projects)
 ```bash
-cd ~/work/meu-projeto
-# Edita ./AGENTS.md (só este projeto)
-rtk git add AGENTS.md
+cd ~/work/agent
+# Edit AGENTS.md, RTK.md, etc
+rtk git commit -m "feat: add new rule"
+# Changes reflect in all harnesses (symlinks!)
+```
+
+### Update Project (single project)
+```bash
+cd ~/work/my-project
+# Edit ./AGENTS.md
 rtk git commit -m "docs: update project rules"
 ```
 
-### Testar Se Tá Funcionando
-
+### Test if Working
 ```bash
-cd ~/work/meu-projeto
+cd ~/work/my-project
 claude
 
-# Pergunta algo que só tá no AGENTS.md do projeto:
 "what's the API base URL?"
-
-# Se responder certo → tá lendo
-# Se responder errado → não tá lendo (verifica symlinks)
+# If answers correctly → working!
+# If wrong → check symlinks
 ```
 
 ---
 
-## 🎓 Dicas de Uso
+## Troubleshooting
 
-### 1. Mantenha AGENTS.md do Projeto CURTO
-
+### Agent doesn't read project AGENTS.md
 ```bash
-# Ruim (500 linhas)
-- Explica tudo em detalhes
-- Documenta cada arquivo
-- Repete regras globais
-
-# Bom (50-100 linhas)
-- Stack + comandos
-- Out of scope
-- Gotchas específicos
+ls -la ./AGENTS.md  # Must exist
 ```
 
-### 2. Use RTK em Tudo
-
+### Agent ignores global rules
 ```bash
-✅ rtk git status
-✅ rtk npm test
-✅ rtk make run
-
-❌ git status (sem rtk)
-```
-
-60-90% menos tokens = contexto dura mais.
-
-### 3. /clear Entre Tarefas
-
-```bash
-# Tarefa 1
-"add login button"
-# [agent faz]
-
-/clear  # Limpa contexto
-
-# Tarefa 2 (não relacionada)
-"fix API rate limiting"
-```
-
-### 4. Cross-Reference Projetos
-
-```bash
-cd ~/work/projeto-novo
-claude
-
-"look at ../projeto-antigo/src/auth and implement same pattern here"
-```
-
-Agent reutiliza padrões bem.
-
----
-
-## 🐛 Troubleshooting
-
-### Agent Não Lê AGENTS.md do Projeto
-
-```bash
-# Verifica se existe
-ls -la ./AGENTS.md
-
-# Se não existe, cria:
-cp ~/work/agent/AGENTS.template.md ./AGENTS.md
-```
-
-### Agent Ignora Regras Globais
-
-```bash
-# Verifica symlinks
-ls -la ~/.claude/CLAUDE.md
-ls -la ~/.config/opencode/AGENTS.md
-
-# Se não existem, roda setup:
+ls -la ~/.claude/CLAUDE.md  # Must be symlink
 cd ~/work/agent
-./setup-symlinks.sh
+./scripts/setup-symlinks.sh  # Recreate
 ```
 
-### AGENTS.md Muito Longo, Agent Ignora
-
+### Skills don't appear
 ```bash
-# Encurta!
-# Remove:
-# - Coisas óbvias do código
-# - Duplicações do global
-# - Documentação extensa
-
-# Meta: 50-100 linhas
-```
-
-### Skills Não Aparecem
-
-```bash
-# Verifica symlink
-ls -la ~/.claude/skills/
-
-# Deve apontar pra ~/work/agent/skills/
-# Se não, roda setup novamente:
-cd ~/work/agent
-./setup-symlinks.sh
+ls -la ~/.claude/skills/  # Must point to ~/work/agent/skills/
 ```
 
 ---
 
-## 📊 Resumo
+## Scripts Reference
 
-### Setup (Uma Vez)
-1. `cd ~/work/agent && ./setup-symlinks.sh`
-2. Verifica symlinks criados
+All scripts in `~/work/agent/scripts/`:
 
-### Por Projeto (Primeira Vez)
-1. `cp ~/work/agent/AGENTS.template.md ./AGENTS.md`
-2. Escolhe stack (Option 1, 2 ou 3)
-3. Adiciona comandos + out of scope
-4. Mantém curto (50-100 linhas)
+**setup-symlinks.sh**
+- Run once to setup global environment
+- Creates symlinks for all 3 harnesses
 
-### Uso Diário
-1. `cd ~/work/projeto`
+**setup-new-project.sh <name>**
+- For new projects (no AGENTS.md)
+- Copies AGENTS.template.md to ~/work/<name>/
+- Usage: `./scripts/setup-new-project.sh my-app`
+
+**setup-existing-project.sh <name>**
+- For existing projects (has AGENTS.md)
+- Adds global reference line at top
+- Backs up original file
+- Usage: `./scripts/setup-existing-project.sh my-app`
+
+---
+
+## Summary
+
+**Setup once:**
+1. `./scripts/setup-symlinks.sh` (global)
+2. Verify symlinks
+
+**Per project:**
+1. `./scripts/setup-new-project.sh <name>` OR `./scripts/setup-existing-project.sh <name>`
+2. Edit AGENTS.md (pick stack, add commands)
+3. Keep short (50-100 lines)
+
+**Daily use:**
+1. `cd ~/work/project`
 2. `claude`
-3. Conversa natural: "add feature X"
-4. Agent lê: global → RTK → projeto → código
-5. Agent implementa seguindo todas as regras
+3. Natural conversation
+4. Agent follows all rules
 
-**Simples assim!** 🎯
-
----
-
-## 🎬 Exemplo Completo (Do Zero)
-
-```bash
-# 1. Setup global (uma vez)
-cd ~/work/agent
-./setup-symlinks.sh
-# ✅ Symlinks criados
-
-# 2. Novo projeto
-cd ~/work/novo-app
-cp ~/work/agent/AGENTS.template.md ./AGENTS.md
-
-# 3. Edita AGENTS.md
-# Escolhe Option 2 (Express + React)
-# Adiciona comandos: npm run dev, npm test
-# Adiciona out of scope: Never touch src/legacy/
-
-# 4. Usa
-claude
-
-"add user registration with email validation"
-
-# Agent:
-# ✅ Lê global (just talk, RTK, etc)
-# ✅ Lê projeto (Express + React, npm run dev)
-# ✅ Implementa
-# ✅ Escreve testes
-# ✅ Roda: rtk npm test
-# ✅ Commit atômico
-
-/clear
-
-"look at ../outro-projeto/auth and do the same"
-
-# Agent:
-# ✅ Lê outro projeto
-# ✅ Replica padrão
-# ✅ Adapta pro contexto atual
-```
-
-**Pronto pra usar!** 🚀
+Simple. Direct. Effective.
