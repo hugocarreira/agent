@@ -1,15 +1,16 @@
 # Agent Skills
 
-This directory contains 25 high-quality, specialized skills that extend agent capabilities for common development, design, and marketing tasks.
+This directory contains 26 high-quality, specialized skills that extend agent capabilities for common development, design, and marketing tasks.
 
 Skills auto-trigger based on keywords in your prompts. You can also invoke them explicitly or discover new ones with `/skills`.
 
 ---
 
-## Dev Workflow (5 skills)
+## Dev Workflow (6 skills)
 
 | Skill | Purpose | Triggers |
 |-------|---------|----------|
+| **ship** | Complete shipping workflow: branch (if main), commit files separately, push, PR | "ship", "ship this", "ship it", "ready to ship" |
 | **agent-browser** | Browser automation CLI for testing, scraping, form-filling | "open website", "fill form", "take screenshot", "scrape data" |
 | **commit-and-push** | Commit changes and push to remote | "commit and push", "commit changes" |
 | **pullrequest** | Create PR using GitHub CLI | "create PR", "pull request", "open PR" |
