@@ -29,15 +29,33 @@ If stuck, ESC + "what's the status"
 
 ---
 
-## What Actually Works (Senior Engineering Practices)
+## What Actually Works (Vibe Engineering - Simon Willison)
 
-LLMs **amplify existing senior engineering practices**:
+**"AI tools amplify existing senior engineering expertise."**
 
-### Automated Testing (Highest Leverage!)
-- Tests for all business logic (unit + integration)
+LLMs amplify what you're already good at. They don't fix what you're bad at.
+
+### Give Agent a Way to Verify (HIGHEST LEVERAGE!)
+
+**This is the #1 thing that makes AI effective.**
+
+Before: "make the dashboard better"
+After: "[screenshot] implement this. Take screenshot, compare to original, list differences, fix them"
+
+Other verification methods:
+- Tests that agent can run (unit, integration, e2e)
+- Benchmarks with clear success criteria
+- Screenshots to compare
+- Expected outputs to diff against
+- CLI commands with known results
+
+**When agent can check itself = dramatically better performance.**
+
+### Automated Testing
+- Rock-solid test suite = agents fly
 - **Write tests in same context** as implementation (finds bugs automatically!)
 - Test-first when possible
-- Give agent a way to verify = single highest leverage thing
+- No tests = agent flounders
 
 ### Documentation
 - Keep `docs/` folder with frontmatter (`summary`, `read_when`)
@@ -55,6 +73,8 @@ LLMs **amplify existing senior engineering practices**:
 ### Planning (Simple, Not Theater)
 **Explore → Plan → Code → Commit**
 
+**For vague requests: separate planning from execution.**
+
 When unsure, ask agent to ask YOU questions:
 ```
 "I want to add OAuth. Interview me about implementation details,
@@ -63,6 +83,11 @@ When done, write spec to docs/plans/oauth.md"
 ```
 
 Then in same session: `"Implement the plan, tests first"`
+
+**For clear tasks: just do it.** No planning needed.
+
+Planning is about separation when YOU don't know what you want.
+Not about making the agent think harder.
 
 ### Cross-Reference Projects
 ```bash
@@ -78,7 +103,65 @@ Model is excellent at reusing patterns.
 
 ---
 
-## Workflow (Single Agent, Single Terminal)
+## Workflow Patterns (Mitchell Hashimoto)
+
+### Mitchell's 6-Step Evolution
+
+**1. Drop the Chatbot**
+- Chatbots (ChatGPT web) are inefficient
+- Use agents (read files, run commands, HTTP)
+
+**2. Reproduce Your Own Work**
+- Do work manually, then force agent to reproduce
+- Excruciating but builds expertise
+- Discover what works from first principles
+
+**3. End-of-Day Agents**
+- Last 30min: kick off 1+ agents
+- Deep research, parallel vague ideas, issue triage
+- "Warm start" next morning
+
+**4. Outsource the Slam Dunks**
+- High-confidence tasks → agent (background)
+- You work on something else
+- **Turn off notifications** (context switching expensive)
+- Check during natural breaks
+
+**5. Engineer the Harness**
+- "Harness engineering" = prevent mistakes permanently
+- Update AGENTS.md (wrong commands/APIs)
+- Add tools (screenshots, filtered tests)
+- Fix once, never happens again
+
+**6. Always Have an Agent Running**
+- Goal: agent running 10-20%+ of workday
+- Not multiple agents (one is enough)
+- Only when truly helpful task exists
+
+### Non-Trivial Vibing (Mitchell)
+
+Real shipping features, not toys.
+
+**Process:**
+1. **Pre-AI planning** (human thinks first!)
+2. **Plan before code** (vague requests only)
+3. **Fill-in-the-blank pattern:**
+   - Create scaffold with TODOs
+   - Agent completes the owl
+4. **Cleanup sessions** ("anti-slop")
+   - Forces understanding
+   - Documents code
+   - Better foundations → better results
+5. **"I broke things, fix my mess"**
+6. **Simulation/testing**
+7. **Always ask "anything else?"**
+8. **Final manual review** (SUPER important)
+
+**Patterns:**
+- Use AI for inspiration (sometimes throw away)
+- "Hitting a wall" → back out, educate yourself
+- Not about faster/slower, about parallel work
+- Can work while doing other things
 
 ### Iterate Fast, Refactor Smart
 - **80% building** → **20% refactoring**
@@ -109,10 +192,13 @@ Trigger words for hard tasks: "take your time", "comprehensive", "read all relat
 
 **Context window is your most precious resource.**
 
+Performance degrades as context fills. Manage aggressively.
+
 #### When to /clear
 - Between unrelated tasks
-- After 2+ corrections on same issue (context polluted with failed approaches)
+- **After 2+ corrections on same issue** (context polluted!)
 - When session feels "slow" or agent seems confused
+- "Slop zone" (agent making dumb mistakes repeatedly)
 
 #### When to /compact
 - Long session on same task
@@ -135,6 +221,20 @@ Trigger words for hard tasks: "take your time", "comprehensive", "read all relat
 - `"undo that"`: revert changes
 - **After 2 corrections, /clear and start fresh with better prompt**
 - Don't let bad context accumulate
+- "Slop zone" = time to back out and rethink
+
+### When Agent Fails (Mitchell's Pattern)
+
+1. **Make 2-3 hail mary attempts** (start vague, get specific)
+2. **If still failing:**
+   - Stop
+   - Back out
+   - Educate yourself manually
+   - Come back with better understanding
+3. **Don't keep bashing head against wall**
+4. **Sometimes pivot to different approach**
+
+AI isn't always the solution. Sometimes it's a liability.
 
 ### Fresh Eyes Review
 When agent finishes implementation:
