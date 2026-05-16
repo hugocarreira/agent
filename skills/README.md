@@ -1,6 +1,6 @@
 # Agent Skills
 
-This directory contains 24 high-quality, specialized skills that extend agent capabilities for common development, design, and marketing tasks.
+This directory contains 25 high-quality, specialized skills that extend agent capabilities for common development, design, and marketing tasks.
 
 Skills auto-trigger based on keywords in your prompts. You can also invoke them explicitly or discover new ones with `/skills`.
 
@@ -71,10 +71,11 @@ Skills auto-trigger based on keywords in your prompts. You can also invoke them 
 
 ---
 
-## Utilities (1 skill)
+## Utilities (2 skills)
 
 | Skill | Purpose | Triggers |
 |-------|---------|----------|
+| **changelog** | Create or update CHANGELOG.md following Keep a Changelog format | "changelog", "update changelog", "release notes", "prepare release" |
 | **find-skills** | Discover and install agent skills from ecosystem | "find skill", "is there a skill", "skill for X" |
 
 ---
