@@ -1,5 +1,6 @@
 ---
 name: changelog
+description: Create or update CHANGELOG.md following Keep a Changelog format with automatic commit analysis
 summary: Create or update CHANGELOG.md following Keep a Changelog format
 read_when: User asks to create changelog, update changelog, generate release notes, or prepare version release
 triggers:

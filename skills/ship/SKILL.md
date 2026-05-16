@@ -1,5 +1,6 @@
 ---
 name: ship
+description: Complete shipping workflow - branch, commit by context, push, and create PR in one command
 summary: Ship changes - auto branch (if main), commit files by context, push, open PR
 read_when: User says "ship", "ship this", "ship it"
 triggers:
