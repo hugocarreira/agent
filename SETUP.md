@@ -25,7 +25,7 @@ skills/             → ~/work/agent/skills/ (all stacks)
 
 **Verify:**
 ```bash
-ls -la ~/.claude/CLAUDE.md
+ls -la ~/.claude/CLAUDE.md      # or ~/.config/opencode/ or ~/.codex/
 ls -la ~/.claude/skills/
 # Should point to ~/work/agent/...
 ```
@@ -60,11 +60,13 @@ cd ~/work/agent
 
 ## How It Works
 
-When you run `claude` in any project:
+When you start your AI coding session in any project:
 
 ```
-1. Reads: ~/.claude/CLAUDE.md (symlink)
-   ↓
+1. Agent reads its harness config (opencode/codex/claude)
+   ↓ (symlinked to ~/work/agent/stacks/<harness>/)
+   ↓ (which references: "READ ~/work/agent/AGENTS.md")
+
 2. Reads: ~/work/agent/AGENTS.md (global rules)
    ↓
 3. Reads: ~/work/agent/RTK.md (token optimization)
@@ -119,7 +121,7 @@ rtk bun run dev
 
 ```bash
 cd ~/work/my-project
-claude
+# Start your AI agent (opencode/codex/claude)
 
 "add login button"
 
@@ -158,7 +160,7 @@ rtk git commit -m "docs: update project rules"
 ### Test if Working
 ```bash
 cd ~/work/my-project
-claude
+# Start your AI agent
 
 "what's the API base URL?"
 # If answers correctly → working!
@@ -176,14 +178,16 @@ ls -la ./AGENTS.md  # Must exist
 
 ### Agent ignores global rules
 ```bash
-ls -la ~/.claude/CLAUDE.md  # Must be symlink
+ls -la ~/.claude/CLAUDE.md  # (or ~/.config/opencode/ or ~/.codex/)
+# Must be symlink
 cd ~/work/agent
 ./scripts/setup-symlinks.sh  # Recreate
 ```
 
 ### Skills don't appear
 ```bash
-ls -la ~/.claude/skills/  # Must point to ~/work/agent/skills/
+ls -la ~/.claude/skills/  # (or ~/.config/opencode/skills/ or ~/.codex/skills/)
+# Must point to ~/work/agent/skills/
 ```
 
 ---
@@ -229,7 +233,7 @@ All scripts in `~/work/agent/scripts/`:
 
 **Daily use:**
 1. `cd ~/work/project`
-2. `claude`
+2. Start your AI agent
 3. Natural conversation
 4. Agent follows all rules
 

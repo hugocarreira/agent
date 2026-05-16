@@ -1,6 +1,6 @@
 # AI Agent Setup - Centralized
 
-**Single source of truth for opencode, codex, claude**
+**Single source of truth for all AI coding assistants (opencode, codex, claude)**
 
 Philosophy: Just talk to it. Give agent way to verify. Ship fast.
 
@@ -95,12 +95,12 @@ cd ~/work/agent
 - Product: page-cro, product-strategy
 - + 23 more
 
-**3 Stacks Unified**:
-- OpenCode (no orchestrator)
-- Codex (Peter Steinberger workflow)
-- Claude (conversational)
+**3 Harnesses Unified**:
+- OpenCode
+- Codex
+- Claude
 
-**All share**: RTK, skills, core principles
+**All share**: RTK, skills, core principles, global AGENTS.md
 
 ---
 
