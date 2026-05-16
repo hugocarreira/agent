@@ -1,12 +1,12 @@
 # Agent Instructions
 
-**Just talk to it.** No orchestrators, no charades, no plan mode theater.
+**Just talk to it.** No orchestrators, no subagents, no multi-terminal theater.
 
 Work style: telegraph; noun-phrases ok; drop grammar; min tokens.
 
 ---
 
-## Core Philosophy
+## Core Philosophy (Peter Steinberger)
 
 ### Just Talk To It
 - Short prompts (1-2 sentences) + screenshots
@@ -20,16 +20,16 @@ Work style: telegraph; noun-phrases ok; drop grammar; min tokens.
 - Trust the model when context is solid
 
 ### Blast Radius Thinking
-Before starting, ask yourself:
+Before starting, mentally ask:
 - How many files will this touch?
 - How long should this take?
-- Can this run in parallel?
+- Can I start this and context-switch if needed?
 
 If stuck, ESC + "what's the status"
 
 ---
 
-## What Actually Works (Vibe Engineering - Simon Willison)
+## What Actually Works (Senior Engineering Practices)
 
 LLMs **amplify existing senior engineering practices**:
 
@@ -37,7 +37,7 @@ LLMs **amplify existing senior engineering practices**:
 - Tests for all business logic (unit + integration)
 - **Write tests in same context** as implementation (finds bugs automatically!)
 - Test-first when possible
-- Give Claude a way to verify its work = single highest leverage thing
+- Give agent a way to verify = single highest leverage thing
 
 ### Documentation
 - Keep `docs/` folder with frontmatter (`summary`, `read_when`)
@@ -53,18 +53,23 @@ LLMs **amplify existing senior engineering practices**:
 - Use `git bisect` when hunting bugs
 
 ### Planning (Simple, Not Theater)
-- Start with conversation, ask clarifying questions
-- Write to `docs/*.md` if complex
-- Iterate on plan before building
-- Don't over-plan, iterate fast
-- **Explore → Plan → Code → Commit** workflow
+**Explore → Plan → Code → Commit**
+
+When unsure, ask agent to ask YOU questions:
+```
+"I want to add OAuth. Interview me about implementation details,
+edge cases, and design decisions. Ask one question at a time.
+When done, write spec to docs/plans/oauth.md"
+```
+
+Then in same session: `"Implement the plan, tests first"`
 
 ### Cross-Reference Projects
 ```bash
 "look at ../other-project and do the same"
 "check how we solved X in ../vibetunnel"
 ```
-Model is great at reusing patterns.
+Model is excellent at reusing patterns.
 
 ### CLI-First
 - Start with CLI, build UI later
@@ -73,120 +78,11 @@ Model is great at reusing patterns.
 
 ---
 
-## Parallel Agents (Simon Willison + Jesse Vincent)
-
-Run 3-8 agents in parallel. Patterns that work:
-
-### 1. Research / Proof of Concepts
-Fire off agent to answer: "Can library X work with our stack?"
-No intention to keep the code, just want the answer.
-
-### 2. "How Does This Work Again?"
-"Explain our signed cookie flow across all files"
-Stash the explanation for future context.
-
-### 3. Small Maintenance Tasks
-"Fix this deprecation warning by running tests and figuring it out"
-Low stakes, outsource the cognitive overhead.
-
-### 4. Architect / Implementer Pattern (Jesse Vincent)
-
-**Architect Session:**
-```bash
-# Brainstorm
-"I've got an idea. Ask me questions one at a time (multiple choice preferred)
-to help refine it. Output 200-300 words at a time, asking if it looks right.
-Write the design to docs/plans/feature-name.md"
-
-# Plan
-"Write comprehensive implementation plan. Assume engineer has zero context.
-Bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
-Write to docs/plans/feature-name-plan.md"
-```
-
-**Implementer Session (NEW terminal!):**
-```bash
-claude  # fresh session
-"Read docs/plans/feature-name-plan.md. Let me know if you have questions."
-"Execute tasks 1-4. DO NOT DEVIATE FROM THE PLAN."
-
-# When done, flip to Architect:
-"Implementer says tasks 1-4 done. Review carefully."
-
-# Copy review back to Implementer, fix issues
-
-# CRITICAL: /clear the Implementer after each chunk!
-# Double-ESC the Architect to reset without bias
-```
-
-**Why this works:**
-- Architect maintains design intent
-- Implementer has clean context per chunk
-- Two "actors" = fresh eyes on reviews
-- No context bloat
-
-### 5. Send Out a Scout (Josh Snyder)
-Give agent a genuinely difficult task with **no intention of landing code**.
-Just to see which files it modifies and how it approaches the problem.
-Learn from its mistakes without making them yourself.
-
-### Isolation Techniques
-- **Git worktrees**: `cd .worktrees && git worktree add feature-name`
-- **/tmp checkouts**: `git clone . /tmp/experiment`
-- **Docker containers**: Claude Code with `--dangerously-skip-permissions` in container
-- **GitHub Codespaces**: VS Code agent in browser, someone else's computer!
-
----
-
-## YOLO Mode (The Joy of Auto-Approve)
-
-**YOLO mode = auto-approve everything = CRITICAL for productivity**
-
-"An AI agent is an LLM wrecking its environment in a loop." - Solomon Hykes
-
-### Risks:
-1. Bad shell commands delete things
-2. Exfiltration (steal source code, secrets)
-3. Use your machine as proxy for attacks
-
-### Mitigation:
-1. **Docker/containers** (best): Restrict files + network
-2. **Someone else's computer**: Codespaces, cloud VMs
-3. **Take a risk**: Avoid malicious prompts, hope for the best
-
-Most people choose #3. You should choose #1 or #2.
-
-### Anthropic's Safe YOLO
-```bash
-# In Docker without internet (or allowlist: api.anthropic.com, github.com, etc)
-claude --dangerously-skip-permissions
-```
-
-Lock internet to trusted hosts = prevent exfiltration.
-
----
-
-## Designing Agentic Loops (Simon Willison)
-
-Look for problems with:
-- **Clear success criteria** (tests pass, screenshot matches, build succeeds)
-- **Trial and error** needed (ugh, gotta try many variations)
-
-Examples:
-- **Debugging**: test failing, let agent iterate until green
-- **Performance**: SQL slow, try indexes + benchmark
-- **Upgrades**: dependency updates, run tests, fix breaking changes
-- **Container size**: try different base images, keep tests passing
-
-**Critical**: Solid test suite = force multiplier.
-
----
-
-## Workflow
+## Workflow (Single Agent, Single Terminal)
 
 ### Iterate Fast, Refactor Smart
 - **80% building** → **20% refactoring**
-- Work on `main` by default (no worktrees unless parallel work)
+- Work on `main` by default
 - Refactor when prompts get slow
 - Commit atomically after each feature
 
@@ -196,38 +92,61 @@ Examples:
 - No secrets in code (env vars only)
 - No `console.log` in production
 
-### Prompting
-- Short prompts + screenshots (~50% should include images)
-- Show don't tell: `[screenshot] "fix padding"`
-- Trigger words for hard tasks: "take your time", "comprehensive", "read all related code"
-- **"Fresh eyes"** magic phrase when reviewing own work
+### Prompting That Works
+Short prompts + screenshots (~50% should include images):
+```
+✅ "add login button"
+✅ [screenshot] "fix padding here"
+✅ "look at ../other-project auth and do same"
+✅ "write tests first, then implement"
+
+❌ "I need you to carefully analyze the system..."
+```
+
+Trigger words for hard tasks: "take your time", "comprehensive", "read all related code"
 
 ### Context Management (CRITICAL!)
 
-**Context window is your most important resource.**
+**Context window is your most precious resource.**
 
-- `/clear` between unrelated tasks
-- `/compact` to summarize (keeps key decisions, frees space)
-- `ESC + ESC` or `/rewind` to restore/summarize from checkpoint
-- Use **subagents for investigation** (separate context!)
-- `/btw` for quick questions (doesn't enter history)
-
-**When to /clear:**
+#### When to /clear
 - Between unrelated tasks
 - After 2+ corrections on same issue (context polluted with failed approaches)
 - When session feels "slow" or agent seems confused
 
-**Signs of context bloat:**
-- Agent ignoring instructions
-- Repeating mistakes
-- Slow responses
-- Irrelevant file reads
+#### When to /compact
+- Long session on same task
+- Want to keep history but free space
+- Tells agent: "Focus on API changes" or "Preserve test commands"
+
+#### /rewind for Quick Fixes
+- `ESC + ESC`: open rewind menu
+- Restore conversation, code, or both
+- Or summarize from a checkpoint
+
+#### Quick Questions
+`/btw "what's the difference between X and Y?"`
+- Answer appears in dismissible overlay
+- Never enters conversation history
+- Doesn't pollute context
 
 ### Course Correct Early
-- `ESC`: stop mid-action, redirect
-- `ESC + ESC` or `/rewind`: restore previous state
+- `ESC`: stop mid-action, redirect immediately
 - `"undo that"`: revert changes
 - **After 2 corrections, /clear and start fresh with better prompt**
+- Don't let bad context accumulate
+
+### Fresh Eyes Review
+When agent finishes implementation:
+```
+"Review your own code with fresh eyes. Look for:
+- Edge cases not covered
+- Tests missing
+- Performance issues
+- Security concerns"
+```
+
+The phrase "fresh eyes" seems to reset agent's bias toward code it just wrote.
 
 ---
 
@@ -242,12 +161,12 @@ rtk npm test
 rtk cargo build
 ```
 
-60-90% token savings. See `RTK.md` for full reference.
+60-90% token savings. See `RTK.md`.
 
 ### CLIs > MCPs
-**MCPs pollute context.** GitHub MCP = 23k tokens!
+**MCPs pollute context.** GitHub MCP alone = 23k tokens!
 
-Prefer CLIs with good help:
+Prefer CLIs:
 - `gh` (GitHub)
 - `vercel` (deploy)
 - `psql` (database)
@@ -255,24 +174,17 @@ Prefer CLIs with good help:
 
 Only use MCPs when no CLI exists.
 
-### MCP via CLI (Peter Steinberger)
-Progressive disclosure, no context cluttering:
-```bash
-pnpm mcp:list                                    # list available
-pnpm mcp:list chrome-devtools --schema          # see schema
-pnpm mcp:call playwright.browser_tabs action=list
-pnpm mcp:call chrome-devtools.evaluate_script --args '{"function":"() => document.title"}'
-```
+Agent is great at learning CLIs: `"use foo-cli --help to learn it, then do X"`
 
 ### Skills Discovery
-32 skills available in `skills/` folder:
+32 skills in `skills/` folder:
 - Development: `commit-and-push`, `pullrequest`, `test-and-verify`
 - Frontend: `frontend-design`, `accessibility`, `core-web-vitals`
 - Next.js: `next-best-practices`, `next-upgrade`
 - SEO: `seo`, `seo-audit`, `programmatic-seo`
 - Product: `product-strategy`, `page-cro`, `signup-flow-cro`
 
-Skills auto-trigger on relevant keywords. List: `ls ~/work/agent/skills/`
+Auto-trigger on keywords. List: `ls ~/work/agent/skills/`
 
 ---
 
@@ -284,18 +196,17 @@ Skills auto-trigger on relevant keywords. List: `ls ~/work/agent/skills/`
 - `git push --force` to main
 - `npm publish`, `docker push`
 - `curl | bash` patterns
-- Destructive git operations (`git reset --hard`, `git restore` to old commit)
+- Destructive git ops (`git reset --hard`, `git restore` to old commit)
 
 ### ALWAYS prefer:
-- Read-only commands first (`ls`, `rtk grep`, `rtk find`)
+- Read-only first (`ls`, `rtk grep`, `rtk find`)
 - Scoped commands (`npm test`, not `npm run all`)
 - Dry-run flags (`terraform plan`)
 
-### Git Discipline (Peter Steinberger)
+### Git Discipline
 - **NEVER edit `.env`** or environment files
-- **Coordinate before deleting** other agents' work
 - Moving/renaming files is OK
-- **ABSOLUTELY NEVER** destructive git ops without explicit instruction
+- **Coordinate before deleting** files (could be from other work)
 
 ---
 
@@ -365,13 +276,13 @@ rtk bun run build      # Build
 
 ## What NOT to Do
 
-❌ **No orchestrators** - Talk directly, no delegation theater
-❌ **No plan mode charades** - Just write to `docs/*.md` if needed
-❌ **No RAG systems** - Model can search fine
-❌ **No subagent spawning** - Except for investigation (context separation)
+❌ **No orchestrators** - Talk directly, no delegation
+❌ **No plan mode theater** - Just write to `docs/*.md` if needed
+❌ **No subagents** - Single agent is enough
+❌ **No multi-terminal workflows** - One terminal, one session
 ❌ **No elaborate prompts** - Short and natural
 ❌ **No over-planning** - Iterate and ship
-❌ **No trust without verification** - Always provide way to verify
+❌ **No trust without verification** - Always give agent way to verify
 
 ---
 
@@ -393,9 +304,26 @@ Never retry same fix twice. Never swallow errors.
 
 ---
 
-## Mental Models
+## Advanced: Non-Interactive Mode
 
-### Single Agent
+For CI, pre-commit hooks, scripts:
+```bash
+# One-off
+claude -p "explain what this project does"
+
+# In scripts
+claude -p "list all API endpoints" --output-format json
+
+# Loop through tasks
+for file in $(cat files.txt); do
+  claude -p "migrate $file to new API" --allowedTools "Edit"
+done
+```
+
+---
+
+## Mental Model
+
 ```
 User
   ↓ (short prompt + maybe screenshot)
@@ -406,65 +334,11 @@ Agent (reads AGENTS.md + RTK.md + project docs/ + code)
 Result
 ```
 
-### Parallel Agents (Architect/Implementer)
-```
-Architect Session              Implementer Session
-      ↓                              ↓
-  Brainstorm                    [NEW terminal]
-      ↓                              ↓
-  Plan (docs/plans/)            Read plan
-      ↓                              ↓
-  Review ←─────────────────────  Execute tasks 1-4
-      ↓                              ↓
-  Sign off                       /clear (fresh context!)
-      ↓                              ↓
-  Review ←─────────────────────  Execute tasks 5-8
-   (ESC+ESC to reset)                ↓
-      ↓                           /clear
-      ...                           ...
-```
-
-No layers. Direct or parallel. No theater.
+No layers. No delegation. No theater. No multi-terminal.
 
 **The model is smart. Talk to it like a senior engineer.**
 
----
-
-## Advanced Patterns
-
-### Non-Interactive Mode
-```bash
-# CI, pre-commit hooks, scripts
-claude -p "prompt" --output-format json
-
-# Loop through tasks
-for file in $(cat files.txt); do
-  claude -p "Migrate $file" --allowedTools "Edit,Bash(git commit *)"
-done
-```
-
-### Worktrees for Parallel Work
-```bash
-mkdir .worktrees  # first time
-cd .worktrees
-git worktree add feature-oauth
-cd feature-oauth
-npm install
-claude  # isolated session!
-```
-
-### CodeRabbit Review with Role-Play (Jesse Vincent)
-```
-A reviewer analyzed this PR. They're external, reading codebase cold.
-
-1) should we hire this reviewer?
-2) which issues should be fixed?
-3) are their proposed fixes correct?
-
-Add valid fixes to your todo. Tell me about anything to skip.
-```
-
-Prevents credulous acceptance of bad suggestions.
+One terminal. One agent. Just ship.
 
 ---
 
@@ -477,19 +351,15 @@ Prevents credulous acceptance of bad suggestions.
 - **CLIs > MCPs** (less context pollution)
 - **RTK everything** (token efficiency)
 - **Iterate fast, refactor smart** (80/20)
-- **Context is precious** (/clear, /compact, subagents)
-- **YOLO mode in containers** (productivity + safety)
-- **Parallel agents for big work** (Architect/Implementer pattern)
-- **Design agentic loops** (clear success + trial/error)
-- **Course correct early** (ESC, /clear after 2 corrections)
+- **Context is precious** (/clear, /compact, /btw)
+- **Course correct early** (ESC, /clear after 2 fails)
+- **"Fresh eyes" for self-review** (magic phrase)
+- **One terminal, one agent** (keep it simple)
 
 **That's it. Keep it simple. Ship fast. Stay in control.**
 
 ---
 
-_Based on workflows from:_
-- _[Peter Steinberger](https://steipete.me) - "Just Talk To It"_
-- _[Simon Willison](https://simonwillison.net) - "Vibe Engineering", Parallel Agents, Agentic Loops_
-- _[Armin Ronacher](https://lucumr.pocoo.org) - "Plan Mode Is Just a Prompt"_
-- _[Jesse Vincent](https://blog.fsck.com) - Architect/Implementer Pattern_
-- _[Anthropic](https://anthropic.com) - Claude Code Best Practices_
+_Based on Peter Steinberger's workflow: [steipete.me](https://steipete.me)_
+_Context management from Anthropic Claude Code Best Practices_
+_"Vibe Engineering" concept from Simon Willison_
