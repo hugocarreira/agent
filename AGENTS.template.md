@@ -6,7 +6,7 @@ READ ~/work/agent/AGENTS.md BEFORE ANYTHING.
 
 Pick your stack or mix:
 
-### Option 1: Go (Gin) + Next.js (freqly style)
+### Option 1: Go (Gin) + Next.js
 ```
 Monorepo:
 - apps/api: Go 1.25+, Gin, PostgreSQL, GORM
@@ -21,7 +21,7 @@ cd apps/api && make test
 cd apps/web && npm test
 ```
 
-### Option 2: Express + Vite/React (winterarc style)
+### Option 2: Express + Vite/React
 ```
 Monorepo:
 - apps/api: Node 24, Express, Sequelize, PostgreSQL
@@ -38,7 +38,7 @@ cd apps/api && npm test       # API tests
 cd apps/web && npm test       # Web tests
 ```
 
-### Option 3: Go API (cko-payment-challenge style)
+### Option 3: Go API (Clean Architecture)
 ```
 Standalone:
 - Language: Go 1.25+

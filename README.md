@@ -59,13 +59,9 @@ skills/              → ~/work/agent/skills/ (all stacks)
 ```bash
 cd ~/work/my-project
 cp ~/work/agent/AGENTS.template.md AGENTS.md
+# Pick one option (Go+Next.js, Express+React, or Go API)
 # Edit with project specifics (keep SHORT!)
 ```
-
-**Your stacks:**
-- `freqly` - Go (Gin) + Next.js 16 monorepo ✅
-- `winterarc` - Express + Vite/React monorepo
-- `cko-payment-challenge` - Go (chi) standalone API
 
 ---
 
