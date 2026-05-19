@@ -1,3 +1,3 @@
-@/home/hugoubuntu/work/agent/RTK.md
+@../../RTK.md
 
-READ ~/work/agent/AGENTS.md
+@../../AGENTS.md

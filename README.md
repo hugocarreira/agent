@@ -9,16 +9,15 @@ Philosophy: Just talk to it. Give agent way to verify. Ship fast.
 ## Quick Setup
 
 ```bash
-cd ~/work/agent
 ./scripts/setup-symlinks.sh
 ```
 
 Creates symlinks:
 ```
-~/.config/opencode/  → ~/work/agent/stacks/opencode/
-~/.codex/            → ~/work/agent/stacks/codex/
-~/.claude/           → ~/work/agent/stacks/claude/
-skills/              → ~/work/agent/skills/ (all stacks)
+~/.config/opencode/  → <repo>/stacks/opencode/ (if dir exists)
+~/.codex/            → <repo>/stacks/codex/     (if dir exists)
+~/.claude/           → <repo>/stacks/claude/    (if dir exists)
+skills/              → <repo>/skills/ (all stacks)
 ```
 
 ---
@@ -26,7 +25,7 @@ skills/              → ~/work/agent/skills/ (all stacks)
 ## Structure
 
 ```
-~/work/agent/
+<repo>/
 ├── AGENTS.md              # Core rules (start here!)
 ├── QUICK-REFERENCE.md     # Daily cheatsheet
 ├── RTK.md                 # Token optimization
@@ -54,8 +53,8 @@ skills/              → ~/work/agent/skills/ (all stacks)
 ### Daily Workflow
 ```bash
 # Agent reads:
-# 1. ~/work/agent/AGENTS.md (core rules)
-# 2. ~/work/agent/RTK.md (token optimization)  
+# 1. AGENTS.md (core rules, via symlink)
+# 2. RTK.md (token optimization, via @include)
 # 3. Project's AGENTS.md (if exists)
 # 4. Your code
 
@@ -68,7 +67,6 @@ skills/              → ~/work/agent/skills/ (all stacks)
 ### Add to Projects
 
 ```bash
-cd ~/work/agent
 ./scripts/setup-project.sh
 # Interactive: asks project name + option (new/existing)
 ```

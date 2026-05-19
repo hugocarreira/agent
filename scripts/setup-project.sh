@@ -3,8 +3,9 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+AGENT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 WORKDIR="$HOME/work"
-AGENT_ROOT="$HOME/work/agent"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  Project Setup - AGENTS.md"
