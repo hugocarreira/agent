@@ -24,13 +24,16 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: stable
-      - name: Set auto-version
-        run: echo "GORELEASER_CURRENT_TAG=v0.0.$(git rev-list --count HEAD)" >> $GITHUB_ENV
+      - name: Create tag
+        run: |
+          TAG="v0.0.$(git rev-list --count HEAD)"
+          git tag "$TAG"
+          git push origin "$TAG"
       - uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: "~> v2"
-          args: release --clean --skip-validate
+          args: release --clean
           workdir: cli
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
