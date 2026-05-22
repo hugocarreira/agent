@@ -39,12 +39,15 @@ func New(root, name string) {
 
 	ref := fmt.Sprintf("READ %s/AGENTS.md BEFORE ANYTHING.\n\n", root)
 	templatePath := filepath.Join(root, "AGENTS.template.md")
-	data, err := os.ReadFile(templatePath)
+	tmpl, err := os.ReadFile(templatePath)
 	if err != nil {
 		log.L.Info("❌ Failed to read template: " + err.Error())
 		return
 	}
-	data = append([]byte(ref), data...)
+
+	instruction := "> **AI:** Generated from template. Scan project codebase, then update the Stack and Commands sections below to match the actual setup. Delete this line when done.\n\n---\n\n"
+	data := []byte(ref + instruction)
+	data = append(data, tmpl...)
 
 	if err := os.WriteFile(agentsFile, data, 0644); err != nil {
 		log.L.Info("❌ Failed to write AGENTS.md: " + err.Error())
@@ -53,10 +56,7 @@ func New(root, name string) {
 
 	log.L.Info("✅ Created: " + agentsFile)
 	log.L.Info("")
-	log.L.Info("Next steps:")
-	log.L.Info("  cd " + projectDir)
-	log.L.Info("  # Edit AGENTS.md:")
-	log.L.Info("  #   1. Choose stack option - delete others")
-	log.L.Info("  #   2. Add project-specific commands")
-	log.L.Info("  #   3. Keep it SHORT (50-100 lines)")
+	log.L.Info("➡️  Paste this into your AI agent:")
+	log.L.Info("")
+	log.L.Info("READ AGENTS.md AND USE AS BASE FOR THIS PROJECT. SCAN THE CODEBASE AND UPDATE Stack/Commands SECTIONS TO MATCH ACTUAL SETUP, THEN REMOVE THE INSTRUCTION LINE.")
 }

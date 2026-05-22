@@ -6,15 +6,20 @@ import (
 )
 
 var linkCmd = &cobra.Command{
-	Use:   "link <project-name>",
+	Use:   "link [project-dir]",
 	Short: "Add global reference to existing project",
 	Long: `Prepends a global AGENTS.md reference to existing project config.
 
-For projects that already have their own AGENTS.md.`,
-	Args: cobra.ExactArgs(1),
+For projects that already have their own AGENTS.md.
+If no project-dir is given, uses the current directory.`,
+	Args: cobra.MaximumNArgs(1),
 	Run: runLink,
 }
 
 func runLink(cmd *cobra.Command, args []string) {
-	project.Link(args[0])
+	dir := "."
+	if len(args) > 0 {
+		dir = args[0]
+	}
+	project.Link(dir)
 }
