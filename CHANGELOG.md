@@ -6,6 +6,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2.0.0] - 2026-05-22
+
+### Added
+
+**Go CLI (`cli/`)**
+- `agentrc setup` - global config + skills setup (replaces `setup-symlinks.sh`)
+- `agentrc init <name>` - create AGENTS.md from template (replaces `setup-project.sh` new)
+- `agentrc link <name>` - add global reference to existing project (replaces `setup-project.sh` existing)
+- `agentrc verify` - check config and symlinks, detect installed agents, report status
+- Zero external deps (cobra, pflag only)
+- Built with Go 1.25 + cobra
+
+**Infrastructure**
+- `cli/Makefile` for build/install
+- Go 1.25.9 installed locally (`~/.local/go/bin/go`)
+- `~/.local/go/bin` and `~/go/bin` added to PATH
+
+### Changed
+- All scripts migrated from bash to Go CLI
+- SETUP.md rewritten for `agentrc` CLI commands
+
+### Removed
+- `scripts/setup-symlinks.sh`
+- `scripts/setup-project.sh`
+
+---
+
 ## [1.0.0] - 2025-01-29
 
 ### 🎉 Initial Release
@@ -53,7 +80,7 @@ Centralized AI agent environment for 3 harnesses (opencode, codex, claude) with 
 **Architecture**
 - Unified 3 harnesses into single source of truth
 - Stack wrappers reduced to 3 lines each (93% reduction)
-- Symlinks connect all configs to `~/work/agent/`
+- Symlinks connect all configs to `~/work/agentrc/`
 
 **Philosophy**
 - Removed orchestrator patterns (multi-agent, subagents, plan mode)

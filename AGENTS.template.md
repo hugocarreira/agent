@@ -1,5 +1,3 @@
-READ ~/work/agent/AGENTS.md BEFORE ANYTHING.
-
 # [Project Name]
 
 **Core Principles:**

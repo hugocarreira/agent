@@ -224,9 +224,20 @@ Prefer: `gh`, `vercel`, `psql`, `bun`
 
 ## Project Setup
 
+### agentrc CLI
+
+agentrc            # Show guide
+agentrc setup      # Global config + skills setup
+agentrc init <n>   # Create new AGENTS.md
+agentrc link <n>   # Reference existing project
+agentrc verify     # Check config + skills
+agentrc status     # Overview of agents and setup
+
+Built with Go + cobra at `cli/`. Install: `cd cli && go install ./cmd/agentrc`
+
 ### AGENTS.md Template
 ```markdown
-READ ~/work/agent/AGENTS.md BEFORE ANYTHING.
+READ <agent-root>/AGENTS.md BEFORE ANYTHING.
 
 # My Project
 
