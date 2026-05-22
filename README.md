@@ -35,7 +35,7 @@ agentrc guide      # Friendly walkthrough
 ## Structure
 
 ```
-<repo>/
+agentrc/
 ├── AGENTS.md  RTK.md  SETUP.md
 ├── cli/       # Go CLI + install.sh
 ├── skills/    # 26 reusable workflows
