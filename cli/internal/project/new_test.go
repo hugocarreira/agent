@@ -28,8 +28,12 @@ func TestNew_createsAgentsMd(t *testing.T) {
 	if err != nil {
 		t.Fatalf("AGENTS.md not created: %v", err)
 	}
-	if string(data) != "READ "+root+"/AGENTS.md BEFORE ANYTHING.\n\nTEMPLATE CONTENT\n" {
+	expected := "READ " + root + "/AGENTS.md BEFORE ANYTHING.\n\n> **AI:** Generated from template."
+	if !strings.Contains(string(data), expected) {
 		t.Errorf("unexpected content:\n%q", string(data))
+	}
+	if !strings.Contains(string(data), "TEMPLATE CONTENT\n") {
+		t.Errorf("missing template content")
 	}
 }
 
@@ -95,9 +99,11 @@ func TestNew_backupExisting(t *testing.T) {
 	os.Stdin = oldStdin
 
 	data, _ := os.ReadFile(existing)
-	expected := "READ " + root + "/AGENTS.md BEFORE ANYTHING.\n\nNEW CONTENT\n"
-	if strings.TrimSpace(string(data)) != strings.TrimSpace(expected) {
-		t.Errorf("existing content = %q, want %q", strings.TrimSpace(string(data)), strings.TrimSpace(expected))
+	if !strings.Contains(string(data), "> **AI:** Generated from template.") {
+		t.Errorf("missing AI instruction in:\n%q", string(data))
+	}
+	if !strings.Contains(string(data), "NEW CONTENT\n") {
+		t.Errorf("missing template content in:\n%q", string(data))
 	}
 
 	files, _ := filepath.Glob(filepath.Join(projectDir, "AGENTS.md.backup.*"))
