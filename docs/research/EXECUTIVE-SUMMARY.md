@@ -372,7 +372,7 @@ Process: Plan → Fill-in-blank → Cleanup → Simulate → Test → Ship
 - Cursor (with agentic mode)
 
 **This repo:**
-- ~/work/agent/ (centralized configs)
+- <agent-root>/ (centralized configs)
 - 32 skills (shared across stacks)
 - RTK.md (token optimization)
 
