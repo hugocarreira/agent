@@ -19,7 +19,7 @@ func Link(name string) {
 	if _, err := os.Stat(agentsFile); os.IsNotExist(err) {
 		log.L.Info("❌ No AGENTS.md found at " + agentsFile)
 		log.L.Info("")
-		log.L.Info("For new projects, use: agentrc init " + name)
+		log.L.Info("For new projects, use: agentrc init " + name + "  # creates AGENTS.md + FEATURES.yaml + PROGRESS.md")
 		return
 	}
 

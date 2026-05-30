@@ -1,0 +1,9 @@
+features:
+  - id: starter-feature
+    behavior: Replace this with the next real feature for this project
+    done_when:
+      - Replace these acceptance bullets with concrete outcomes
+    check:
+      type: manual
+      note: Optional. Add browser, CLI, or test verification notes here.
+    state: not_started

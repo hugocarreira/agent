@@ -11,7 +11,7 @@ var guideCmd = &cobra.Command{
 	Use:   "guide",
 	Short: "Show a friendly overview of agentrc",
 	Args:  cobra.NoArgs,
-	Run: runGuide,
+	Run:   runGuide,
 }
 
 func runGuide(cmd *cobra.Command, args []string) {
@@ -25,12 +25,12 @@ func runGuide(cmd *cobra.Command, args []string) {
 	fmt.Println("  ── Quick Start ──")
 	fmt.Println()
 	fmt.Println("    agentrc setup     Link config + skills to all installed agents")
-	fmt.Println("    agentrc verify    Check everything is set up correctly")
+	fmt.Println("    agentrc verify    Check setup plus current project state files")
 	fmt.Println("    agentrc status    Overview of agents, config, commands")
 	fmt.Println()
 	fmt.Println("  ── Per-Project ──")
 	fmt.Println()
-	fmt.Println("    agentrc init <n>  Create AGENTS.md for a new project")
+	fmt.Println("    agentrc init <n>  Create AGENTS.md + FEATURES.yaml + PROGRESS.md")
 	fmt.Println("    agentrc link <n>  Add global reference to existing project")
 	fmt.Println()
 	fmt.Println("  ── Tips ──")
@@ -41,5 +41,3 @@ func runGuide(cmd *cobra.Command, args []string) {
 	fmt.Println("    • Use agentrc <cmd> --help for detailed flags")
 	fmt.Println()
 }
-
-

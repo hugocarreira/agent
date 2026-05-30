@@ -9,14 +9,16 @@ import (
 
 var initCmd = &cobra.Command{
 	Use:   "init [project-name]",
-	Short: "Create AGENTS.md for a new project",
-	Long: `Copies AGENTS.template.md to <project>/AGENTS.md.
+	Short: "Create AGENTS.md, FEATURES.yaml, and PROGRESS.md for a project",
+	Long: `Creates the default project pack in <project>:
+- AGENTS.md
+- FEATURES.yaml
+- PROGRESS.md
 
-For projects that don't have an AGENTS.md yet.
-Backs up existing file before overwriting.
+Backs up existing generated files before overwriting.
 If no project-name is given, runs in the current directory.`,
 	Args: cobra.MaximumNArgs(1),
-	Run: runInit,
+	Run:  runInit,
 }
 
 func runInit(cmd *cobra.Command, args []string) {

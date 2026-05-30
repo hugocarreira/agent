@@ -12,9 +12,32 @@ import (
 	"github.com/hugocarreira/agentrc/cli/internal/log"
 )
 
+type templateFile struct {
+	Template string
+	Target   string
+	Build    func(root string, tmpl []byte) []byte
+}
+
+func managedTemplateFiles() []templateFile {
+	return []templateFile{
+		{
+			Template: "AGENTS.template.md",
+			Target:   "AGENTS.md",
+			Build:    buildAgentsFile,
+		},
+		{
+			Template: "FEATURES.template.yaml",
+			Target:   "FEATURES.yaml",
+		},
+		{
+			Template: "PROGRESS.template.md",
+			Target:   "PROGRESS.md",
+		},
+	}
+}
+
 func New(root, name string) {
 	projectDir := config.ProjectDir(name)
-	agentsFile := filepath.Join(projectDir, "AGENTS.md")
 
 	if _, err := os.Stat(projectDir); os.IsNotExist(err) {
 		log.L.Info("❌ Project '" + name + "' not found at " + projectDir)
@@ -23,40 +46,100 @@ func New(root, name string) {
 		return
 	}
 
-	if _, err := os.Stat(agentsFile); err == nil {
-		log.L.Info("⚠️  AGENTS.md already exists at " + agentsFile)
-		log.L.Info("Overwrite? [y/N]: ")
+	files := managedTemplateFiles()
+
+	rendered, err := loadTemplates(root, files)
+	if err != nil {
+		log.L.Info("❌ " + err.Error())
+		return
+	}
+
+	existing := existingManagedFiles(projectDir, files)
+	if len(existing) > 0 {
+		log.L.Info("⚠️  Project pack already exists in " + projectDir)
+		log.L.Info("Overwrite generated files? [y/N]: ")
 		scanner := bufio.NewScanner(os.Stdin)
 		scanner.Scan()
 		if scanner.Text() != "y" && scanner.Text() != "Y" {
 			log.L.Info("Cancelled.")
 			return
 		}
-		backup := agentsFile + ".backup." + strconv.FormatInt(time.Now().Unix(), 10)
-		os.Rename(agentsFile, backup)
+		backupManagedFiles(existing)
+	}
+
+	for target, data := range rendered {
+		targetPath := filepath.Join(projectDir, target)
+		if err := os.WriteFile(targetPath, data, 0644); err != nil {
+			log.L.Info("❌ Failed to write " + target + ": " + err.Error())
+			return
+		}
+		log.L.Info("✅ Created: " + targetPath)
+	}
+
+	log.L.Info("")
+	log.L.Info("➡️  Next instruction for your AI agent:")
+	log.L.Info("")
+	log.L.Info(initInstruction())
+}
+
+func buildAgentsFile(root string, tmpl []byte) []byte {
+	ref := fmt.Sprintf("READ %s/AGENTS.md BEFORE ANYTHING.\n\n", root)
+	instruction := "> **AI:** Generated from template. Scan project codebase, update Stack/Commands/Out of Scope, replace starter feature entries, and remove this line when done.\n\n---\n\n"
+	data := []byte(ref + instruction)
+	return append(data, tmpl...)
+}
+
+func loadTemplates(root string, files []templateFile) (map[string][]byte, error) {
+	rendered := make(map[string][]byte, len(files))
+
+	for _, file := range files {
+		templatePath := filepath.Join(root, file.Template)
+		tmpl, err := os.ReadFile(templatePath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read template %s: %w", templatePath, err)
+		}
+
+		data := tmpl
+		if file.Build != nil {
+			data = file.Build(root, tmpl)
+		}
+		rendered[file.Target] = data
+	}
+
+	return rendered, nil
+}
+
+func existingManagedFiles(projectDir string, files []templateFile) []string {
+	var existing []string
+
+	for _, file := range files {
+		targetPath := filepath.Join(projectDir, file.Target)
+		if _, err := os.Stat(targetPath); err == nil {
+			existing = append(existing, targetPath)
+		}
+	}
+
+	return existing
+}
+
+func backupManagedFiles(paths []string) {
+	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
+	for _, path := range paths {
+		backup := path + ".backup." + timestamp
+		if err := os.Rename(path, backup); err != nil {
+			log.L.Info("⚠️  Failed to back up " + path + ": " + err.Error())
+			continue
+		}
 		log.L.Info("📦 Backup created: " + backup)
 	}
+}
 
-	ref := fmt.Sprintf("READ %s/AGENTS.md BEFORE ANYTHING.\n\n", root)
-	templatePath := filepath.Join(root, "AGENTS.template.md")
-	tmpl, err := os.ReadFile(templatePath)
-	if err != nil {
-		log.L.Info("❌ Failed to read template: " + err.Error())
-		return
-	}
+func initInstruction() string {
+	return `Read AGENTS.md first. Then inspect this repo and finish the project pack from evidence:
 
-	instruction := "> **AI:** Generated from template. Scan project codebase, then update the Stack and Commands sections below to match the actual setup. Delete this line when done.\n\n---\n\n"
-	data := []byte(ref + instruction)
-	data = append(data, tmpl...)
+1. Update AGENTS.md so Stack, Commands, Out of Scope, and Project Notes match the real codebase.
+2. Replace the starter entries in FEATURES.yaml with a short list of concrete current features. For each feature, set behavior, done_when, and state.
+3. Rewrite PROGRESS.md so it reflects the current session state, blockers, and exact next step.
 
-	if err := os.WriteFile(agentsFile, data, 0644); err != nil {
-		log.L.Info("❌ Failed to write AGENTS.md: " + err.Error())
-		return
-	}
-
-	log.L.Info("✅ Created: " + agentsFile)
-	log.L.Info("")
-	log.L.Info("➡️  Paste this into your AI agent:")
-	log.L.Info("")
-	log.L.Info("READ AGENTS.md AND USE AS BASE FOR THIS PROJECT. SCAN THE CODEBASE AND UPDATE Stack/Commands SECTIONS TO MATCH ACTUAL SETUP, THEN REMOVE THE INSTRUCTION LINE.")
+Use code, docs, package scripts, and config files as sources of truth. Do not invent product strategy, roadmap, or requirements. If something is unclear, leave a TODO or ask the user.`
 }

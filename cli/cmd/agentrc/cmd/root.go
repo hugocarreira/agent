@@ -12,7 +12,7 @@ var rootCmd = &cobra.Command{
 	Short: "AI agent harness setup & project management",
 	Long: `agentrc — manage 6 AI coding agents (OpenCode, Codex, Claude, Copilot, Hermes, Gemini).
 
-Setup configs, link skills, init projects, verify setup, check status.`,
+Setup configs, init project packs, link existing projects, verify setup, check status.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
