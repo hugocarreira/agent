@@ -38,7 +38,7 @@ agentrc guide      # Friendly walkthrough
 agentrc/
 ├── AGENTS.md  RTK.md  SETUP.md
 ├── cli/       # Go CLI + install.sh
-├── skills/    # 26 reusable workflows
+├── skills/    # 16 focused workflows
 └── plugins/   # OpenCode plugins
 ```
 
@@ -51,4 +51,4 @@ Agent reads: harness config → global rules → project rules → your code.
 3. **Just Talk To It** — Short prompts + screenshots, no theater
 4. **Final Manual Review** — Always understand what agent did
 
-26 skills · 6 agents · 1 source of truth · 0 theater
+16 skills · 6 agents · 1 source of truth · 0 theater

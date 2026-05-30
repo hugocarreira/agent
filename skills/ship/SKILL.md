@@ -1,12 +1,18 @@
 ---
 name: ship
-description: Complete shipping workflow - branch, commit by context, push, and create PR in one command
-summary: Ship changes - auto branch (if main), commit files by context, push, open PR
-read_when: User says "ship", "ship this", "ship it"
+description: Complete shipping workflow - branch, commit by context, push, and create or update a PR. Also use when the user asks to commit and push or open a pull request from current work.
+summary: Ship changes - auto branch if needed, commit files by context, push, and create or update a PR
+read_when: User says "ship", "ship this", "ship it", "commit and push", or "create PR"
 triggers:
   - ship
   - ship this
   - ship it
+  - ready to ship
+  - commit and push
+  - push this
+  - create pr
+  - open pr
+  - pull request
 ---
 
 # Ship
@@ -18,7 +24,15 @@ Complete shipping workflow in one command.
 1. **Branch** - If on main, create feature branch (feat/fix/refactor/docs)
 2. **Commit** - Group files by context, commit separately with Conventional Commits
 3. **Push** - Push to remote (set upstream if needed)
-4. **PR** - Create pull request with `gh pr create`
+4. **PR** - Create or update pull request with `gh pr create`
+
+## Partial Modes
+
+Use the same skill for narrower shipping requests:
+
+- **Commit + push only** - if the user explicitly does not want a PR yet
+- **PR only** - if commits already exist and the branch just needs a PR
+- **Current branch only** - if the user already created the branch manually
 
 ## Smart File Grouping
 
@@ -84,21 +98,22 @@ gh pr create --title "..." --body "..." --base main
 "ship this"
 ```
 
+**Commit + push only:**
+```
+"commit and push"
+"ship without PR"
+```
+
+**PR from current branch:**
+```
+"create PR"
+"open PR for this branch"
+```
+
 **Custom branch:**
 ```
 "ship on branch feat/new-feature"
 ```
-
-**Skip PR:**
-```
-"ship without PR"
-```
-
-## vs. Other Skills
-
-**Use `ship`** - Complete automation (branch + commits + push + PR)  
-**Use `commit-and-push`** - Manual commit messages, no PR  
-**Use `pullrequest`** - Already committed/pushed, just need PR
 
 ## Example
 
