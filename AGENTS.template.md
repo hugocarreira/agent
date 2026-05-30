@@ -1,47 +1,32 @@
 # [Project Name]
 
-**Core Principles:**
-- Think Before Coding (don't assume, surface tradeoffs)
-- Simplicity First (min code, no speculation)
-- Surgical Changes (touch only what's needed)
-- Goal-Driven (define success, loop until verified)
-
----
+## Core Rules
+- Think before coding. Surface assumptions and tradeoffs.
+- Keep changes small and direct. No speculative abstractions.
+- Touch only what the task requires.
+- Define concrete done conditions before substantial work.
+- For substantial sessions, update `PROGRESS.md`.
+- Update `FEATURES.yaml` only when feature state, scope, or acceptance changes.
 
 ## Stack
+- Tech:
+- Framework:
+- Architecture:
 
-Tech:
-Framework:
-Architecture:
-
-Commands:
+## Commands
+```bash
 ```
-```
 
----
-
-## Conventions
-
----
+## State Files
+- `FEATURES.yaml` = active feature scope and acceptance criteria
+- `PROGRESS.md` = session handoff, blockers, and restart point
 
 ## Out of Scope
+- Never modify `.env` files or commit secrets.
+- Ask before database schema changes.
+- Ask before breaking API changes.
+- Ask before deleting files.
 
-```
-Never modify:
-- .env files (never commit!)
-
-Ask before:
-- Database schema changes
-- Breaking API changes
-- Deleting files
-```
-
----
-
-## Project-Specific Notes
-
-[Add anything agents keep getting wrong or can't infer from code]
-
----
-
-**Keep it simple. Add only what's needed. Update when agent keeps making same mistake.**
+## Project Notes
+- Add only facts agents cannot infer from the codebase.
+- Keep this file short. Link deeper docs instead of pasting long manuals here.

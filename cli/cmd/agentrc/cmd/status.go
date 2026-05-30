@@ -15,7 +15,7 @@ var statusCmd = &cobra.Command{
 	Use:   "status",
 	Short: "Show overview of agents, config, and commands",
 	Long:  `Displays a summary of installed agents, their config status, RTK availability, and the repo root.`,
-	Run: runStatus,
+	Run:   runStatus,
 }
 
 func runStatus(cmd *cobra.Command, args []string) {
