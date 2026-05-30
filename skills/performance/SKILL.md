@@ -1,6 +1,6 @@
 ---
 name: performance
-description: Optimize web performance for faster loading and better user experience. Use when asked to "speed up my site", "optimize performance", "reduce load time", "fix slow loading", "improve page speed", or "performance audit".
+description: Optimize web performance for faster loading and better user experience. Use when asked to "speed up my site", "optimize performance", "reduce load time", "fix slow loading", "improve page speed", "Core Web Vitals", "LCP", "INP", "CLS", or "performance audit".
 license: MIT
 metadata:
   author: web-quality-skills
@@ -10,7 +10,7 @@ metadata:
 
 # Performance optimization
 
-Deep performance optimization based on Lighthouse performance audits. Focuses on loading speed, runtime efficiency, and resource optimization.
+Deep performance optimization based on Lighthouse performance audits. Focuses on loading speed, runtime efficiency, resource optimization, and Core Web Vitals triage.
 
 ## How it works
 
@@ -18,6 +18,16 @@ Deep performance optimization based on Lighthouse performance audits. Focuses on
 2. Prioritize by impact on Core Web Vitals
 3. Provide specific optimizations with code examples
 4. Measure improvement with before/after metrics
+
+## Core Web Vitals triage
+
+Use this same skill for metric-specific performance work:
+
+- **LCP** - Large hero media, render-blocking CSS/JS, slow TTFB, missing preload/fetch priority
+- **INP** - Long tasks, heavy hydration, expensive event handlers, too much client-side JavaScript
+- **CLS** - Missing width/height, late UI injection, ad/embed slots without reserved space, font swaps
+
+If a request only mentions `LCP`, `INP`, `CLS`, or "Core Web Vitals", stay in this skill and optimize the concrete causes first.
 
 ## Performance budget
 
@@ -359,4 +369,4 @@ onCLS(console.log);
 
 ## References
 
-For Core Web Vitals specific optimizations, see [Core Web Vitals](../core-web-vitals/SKILL.md).
+Use this skill directly for Core Web Vitals specific optimizations.

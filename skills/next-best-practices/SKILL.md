@@ -1,6 +1,6 @@
 ---
 name: next-best-practices
-description: Next.js best practices - file conventions, RSC boundaries, data patterns, async APIs, metadata, error handling, route handlers, image/font optimization, bundling
+description: Next.js best practices - file conventions, RSC boundaries, data patterns, async APIs, Cache Components, metadata, error handling, route handlers, image/font optimization, bundling
 user-invocable: false
 metadata:
   tags: ["frontend", "nextjs", "best-practices"]
@@ -47,6 +47,18 @@ See [runtime-selection.md](./runtime-selection.md) for:
 See [directives.md](./directives.md) for:
 - `'use client'`, `'use server'` (React)
 - `'use cache'` (Next.js)
+
+## Cache Components
+
+Use this section for Next.js cache-specific work:
+
+- Enable `cacheComponents: true` in `next.config.ts` when using Cache Components
+- Use `'use cache'` to mark cached functions or components
+- Use `cacheLife()` to tune freshness windows
+- Use `cacheTag()` and `updateTag()` when you need targeted invalidation
+- Prefer cached-by-default reads and isolate truly request-time logic
+
+If the user mentions `PPR`, `Cache Components`, `cacheLife`, `cacheTag`, or `updateTag`, stay in this skill.
 
 ## Functions
 
@@ -152,4 +164,3 @@ See [self-hosting.md](./self-hosting.md) for:
 See [debug-tricks.md](./debug-tricks.md) for:
 - MCP endpoint for AI-assisted debugging
 - Rebuild specific routes with `--debug-build-paths`
-

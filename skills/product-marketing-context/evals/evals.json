@@ -59,7 +59,7 @@
     {
       "id": 5,
       "prompt": "Do we have a product marketing context set up? I want to make sure the other marketing skills have context about our product.",
-      "expected_output": "Should check for .agents/product-marketing-context.md (and the older .claude/product-marketing-context.md location). Should report whether it exists and summarize its contents if found. If it doesn't exist, should offer to create one and explain why it's valuable (other skills like copywriting, page-cro, seo-audit check for it first). Should explain how other skills use this context document.",
+      "expected_output": "Should check for .agents/product-marketing-context.md (and the older .claude/product-marketing-context.md location). Should report whether it exists and summarize its contents if found. If it doesn't exist, should offer to create one and explain why it's valuable (other writing, landing-page, and SEO skills check it first). Should explain how other skills use this context document.",
       "assertions": [
         "Checks both file locations",
         "Reports whether context doc exists",
@@ -72,11 +72,11 @@
     {
       "id": 6,
       "prompt": "Write homepage copy for our SaaS product.",
-      "expected_output": "Should recognize this is a copywriting task, not a product marketing context task. Should check for product-marketing-context.md (as other skills do), and if it doesn't exist, may suggest creating one first. But should defer to the copywriting skill for actually writing the homepage copy.",
+      "expected_output": "Should recognize this is a homepage copy task, not a product marketing context task. Should check for product-marketing-context.md (as other skills do), and if it doesn't exist, may suggest creating one first. But should defer to the landing-page or content-research-writer skill for actually writing the homepage copy.",
       "assertions": [
-        "Recognizes this as a copywriting task",
+        "Recognizes this as a homepage copy task",
         "May check for or suggest creating product-marketing-context.md",
-        "References or defers to copywriting skill for the actual copy",
+        "References or defers to landing-page or content-research-writer for the actual copy",
         "Does not attempt to write homepage copy using context creation patterns"
       ],
       "files": []
